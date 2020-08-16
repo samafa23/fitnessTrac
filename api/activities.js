@@ -50,7 +50,7 @@ activitiesRouter.patch('/:activityId', requireUser, async (req, res, next) => {
 
     try {
         const updatedActivity = await updateActivity(activityId, updateFields);
-        console.log("updatedActivity", updatedActivity);
+
         res.send({
             activity: updatedActivity
         });

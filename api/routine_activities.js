@@ -5,7 +5,7 @@ const { getAllRoutineActivities, updateRoutineActivity, deleteRoutineActivity } 
 
 jointRouter.patch('/:routineActivityId', requireUser, async (req, res, next) => {
     const { routineActivityId } = req.params;
-    console.log("routineActivity", routineActivityId);
+
     const { count, duration } = req.body;
 
     const updateFields = {};
@@ -31,7 +31,6 @@ jointRouter.patch('/:routineActivityId', requireUser, async (req, res, next) => 
 jointRouter.delete('/:routineActivityId', requireUser, async (req, res, next) => {
     try {
         const routAct = req.params;
-        console.log(routAct.routineActivityId);
 
         await deleteRoutineActivity(routAct.routineActivityId);
         res.send({
@@ -44,6 +43,3 @@ jointRouter.delete('/:routineActivityId', requireUser, async (req, res, next) =>
 
 module.exports = jointRouter;
 
-// curl http://localhost:3000/api/routine_activities/3 -X PATCH -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJhbm5pZSIsImlhdCI6MTU5NzYxMTc1Mn0.FlX7M3xAU7qTYceVOxuPhg3zOyftefPHKR6DQ0DzkwQ' -H 'Content-Type: application/json' -d '{"count": "15","duratuion": "30"}'
-
-// curl http://localhost:3000/api/routine_activities/3 -X DELETE -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJhbm5pZSIsImlhdCI6MTU5NzYxMTc1Mn0.FlX7M3xAU7qTYceVOxuPhg3zOyftefPHKR6DQ0DzkwQ'
