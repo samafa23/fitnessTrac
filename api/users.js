@@ -11,19 +11,21 @@ usersRouter.use((req, res, next) => {
     next();
 });
 
-usersRouter.get('/', async (req, res) => {
-    const users = await getAllUsers();
+usersRouter.get('/', async (req, res, next) => {
+    try {
+        const users = await getAllUsers();
 
-    res.send({
-        users
-    });
+        res.send({
+            users
+        });
+    } catch ({ name, message }) {
+        next({ name, message });
+    }
 });
 
 usersRouter.post(`/login`, async (req, res, next) => {
     try {
         const { username, password } = req.body;
-
-        console.log(req.body);
 
         if (!username || !password) {
             next({
@@ -33,8 +35,6 @@ usersRouter.post(`/login`, async (req, res, next) => {
         }
 
         const user = await getUser({ username });
-
-        console.log("the User", user);
 
         const hashedPassword = user.password;
 
@@ -67,34 +67,32 @@ usersRouter.post('/register', async (req, res, next) => {
                 name: 'UserExistsError',
                 message: 'A user by that username already exists!'
             });
+        } else if (password.length <= 7) {
+            next({
+                name: 'PasswordLengthError',
+                message: 'Password must be at least 8 characters'
+            });
+        } else {
+            bcrypt.hash(password, SALT_COUNT, async (err, hashedPassword,) => {
+                console.log(hashedPassword);
+                securedPassword = hashedPassword;
+                const user = await createUser({
+                    username, password: securedPassword
+                });
+
+                const token = jwt.sign({
+                    id: user.id,
+                    username
+                }, process.env.JWT_SECRET, {
+                    expiresIn: '1w'
+                });
+
+                res.send({
+                    message: "Thank you for signing up!",
+                    token
+                });
+            });
         }
-        // } else if (password <= 7) {
-        //     next({
-        //         name: 'PasswordLengthError',
-        //         message: 'Password must be at least 8 characters'
-        //     });
-        // }
-
-        bcrypt.hash(password, SALT_COUNT, async (err, hashedPassword,) => {
-            console.log(hashedPassword);
-            securedPassword = hashedPassword;
-            const user = await createUser({
-                username, password: securedPassword
-            });
-
-            const token = jwt.sign({
-                id: user.id,
-                username
-            }, process.env.JWT_SECRET, {
-                expiresIn: '1w'
-            });
-
-            res.send({
-                message: "Thank you for signing up!",
-                token
-            });
-        });
-
     } catch ({ name, message }) {
         next({ name, message });
     }
@@ -117,11 +115,11 @@ usersRouter.get('/:username/routines', async (req, res, next) => {
 module.exports = usersRouter;
 
 // curl http://localhost:3000/api/users/:username/routines -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsInVzZXJuYW1lIjoibGVvbmEiLCJpYXQiOjE1OTczNTYxNjV9.iuLy7AnJn4zSiiij-ifiX0pBbxamFgeIUQwp8tu_ow4'
-// curl http://localhost:3000/api/users/register -H "Content-Type: application/json" -X POST -d '{"username": "nunu", "password": "abominable"}' 
-// curl http://localhost:3000/api/users/login -H "Content-Type: application/json" -X POST -d '{"username": "nunu", "password": "abominable"}'
+// curl http://localhost:3000/api/users/register -H "Content-Type: application/json" -X POST -d '{"username": "garen", "password": "spin"}' 
+// curl http://localhost:3000/api/users/login -H "Content-Type: application/json" -X POST -d '{"username": "annie", "password": "tibbers8"}'
 // nunu - abominable
 
-// curl http://localhost:3000/api/activities -X POST -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJudW51IiwiaWF0IjoxNTk3NDE5NTU4fQ.wVoCduvCi5RHDEqgFD0btI-Dal2sS2Qo5xe4qw_FsL0' -H 'Content-Type: application/json' -d '{"name": "lift snowballs", "description": "Lift a 30lb from the grand and above your head, hold, bring back down, release infront of you."}'
+// curl http://localhost:3000/api/activities -X POST -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwidXNlcm5hbWUiOiJhbm5pZSIsImlhdCI6MTU5NzUxMDYyMH0.14jnVax1QBMD6D5zJShsrq62CqhrsUS_9-ze36C7zEg' -H 'Content-Type: application/json' -d '{"name": "throw fireballs", "description": "toss fireballs to increase arm strength"}'
 // curl http://localhost:3000/api/activities/1 -X PATCH -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJudW51IiwiaWF0IjoxNTk3NTA0MTMxfQ.F3lYjF2iM8Zbd2bpcZl3sbZVCrlHKGHmpd2TCljd6ts' -H 'Content-Type: application/json' -d '{"name": "squats","description": "squats increase lower body and core strength, as well as flexibility in your lower back and hips."}'
 // PRACTICE TOKEN: 
 // 08/14/20

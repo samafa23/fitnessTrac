@@ -261,14 +261,14 @@ async function updateRoutine(id, fields = {}) {
     }
 
     try {
-        const { rows: [activity] } = await client.query(`
+        const { rows: [routine] } = await client.query(`
         UPDATE routines
         SET ${ setString}
         WHERE id=${ id}
         RETURNING *;
         `, Object.values(fields));
 
-        return activity;
+        return routine;
     } catch (error) {
         throw error;
     }
@@ -302,7 +302,7 @@ async function getAllRoutineActivities() {
     try {
         const { rows: routineActivities } = await client.query(`
         SELECT *
-        FROM routine_activities
+        FROM routine_activities;
         `);
 
         return routineActivities;

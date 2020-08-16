@@ -50,6 +50,9 @@ apiRouter.use('/activities', activitiesRouter);
 const routinesRouter = require('./routines');
 apiRouter.use('/routines', routinesRouter);
 
+const jointRouter = require('./routine_activities');
+apiRouter.use('/routine_activities', jointRouter);
+
 apiRouter.use((error, req, res, next) => {
     res.send(error);
 });

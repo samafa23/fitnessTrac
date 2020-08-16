@@ -4,15 +4,14 @@ const { getAllActivities, createActivity, updateActivity } = require('../db');
 const { requireUser } = require('./utils');
 
 //             G  E  T
-activitiesRouter.get('/', async (req, res) => {
+activitiesRouter.get('/', async (req, res, next) => {
     try {
         const activities = await getAllActivities();
-        console.log('activities', activities);
 
         res.send({
             activities
         });
-    } catch (error) {
+    } catch ({ name, message }) {
         next({ name, message });
     }
 });
@@ -41,9 +40,6 @@ activitiesRouter.patch('/:activityId', requireUser, async (req, res, next) => {
     const { activityId } = req.params;
     const { name, description } = req.body;
     const updateFields = {};
-    console.log("activityId", activityId);
-    console.log("req.body", req.body);
-
     if (name) {
         updateFields.name = name;
     }
@@ -53,7 +49,6 @@ activitiesRouter.patch('/:activityId', requireUser, async (req, res, next) => {
     }
 
     try {
-        console.log("updateFields", updateFields);
         const updatedActivity = await updateActivity(activityId, updateFields);
         console.log("updatedActivity", updatedActivity);
         res.send({
@@ -65,3 +60,4 @@ activitiesRouter.patch('/:activityId', requireUser, async (req, res, next) => {
 });
 
 module.exports = activitiesRouter;
+
