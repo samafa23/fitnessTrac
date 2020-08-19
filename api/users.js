@@ -5,12 +5,6 @@ const bcrypt = require('bcryptjs');
 const { getAllUsers, getUser, createUser, getAllRoutinesByUser } = require('../db');
 const SALT_COUNT = 10;
 
-usersRouter.use((req, res, next) => {
-    console.log("A request is being made to /users!");
-
-    next();
-});
-
 usersRouter.get('/', async (req, res, next) => {
     try {
         const users = await getAllUsers();
@@ -113,14 +107,3 @@ usersRouter.get('/:username/routines', async (req, res, next) => {
 });
 
 module.exports = usersRouter;
-
-// curl http://localhost:3000/api/users/:username/routines -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjMsInVzZXJuYW1lIjoibGVvbmEiLCJpYXQiOjE1OTczNTYxNjV9.iuLy7AnJn4zSiiij-ifiX0pBbxamFgeIUQwp8tu_ow4'
-// curl http://localhost:3000/api/users/register -H "Content-Type: application/json" -X POST -d '{"username": "garen", "password": "spin"}' 
-// curl http://localhost:3000/api/users/login -H "Content-Type: application/json" -X POST -d '{"username": "annie", "password": "tibbers8"}'
-// nunu - abominable
-
-// curl http://localhost:3000/api/activities -X POST -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwidXNlcm5hbWUiOiJhbm5pZSIsImlhdCI6MTU5NzUxMDYyMH0.14jnVax1QBMD6D5zJShsrq62CqhrsUS_9-ze36C7zEg' -H 'Content-Type: application/json' -d '{"name": "throw fireballs", "description": "toss fireballs to increase arm strength"}'
-// curl http://localhost:3000/api/activities/1 -X PATCH -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJudW51IiwiaWF0IjoxNTk3NTA0MTMxfQ.F3lYjF2iM8Zbd2bpcZl3sbZVCrlHKGHmpd2TCljd6ts' -H 'Content-Type: application/json' -d '{"name": "squats","description": "squats increase lower body and core strength, as well as flexibility in your lower back and hips."}'
-// PRACTICE TOKEN: 
-// 08/14/20
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJudW51IiwiaWF0IjoxNTk3NDI2OTIzfQ.grqk3y9T-duMKVfVZZFOnRTRJ0AV4caDx4Uz4D-LdL8

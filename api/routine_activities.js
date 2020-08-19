@@ -1,7 +1,7 @@
 const express = require('express');
 const { requireUser } = require('./utils');
 const jointRouter = express.Router();
-const { getAllRoutineActivities, updateRoutineActivity, deleteRoutineActivity } = require('../db');
+const { updateRoutineActivity, deleteRoutineActivity } = require('../db');
 
 jointRouter.patch('/:routineActivityId', requireUser, async (req, res, next) => {
     const { routineActivityId } = req.params;
